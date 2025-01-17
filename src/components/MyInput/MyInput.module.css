@@ -1,0 +1,151 @@
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  width: 100%;
+}
+.labelWrapper {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+}
+.counter {
+  font-size: 12px;
+  color: var(--icon-color);
+  line-height: 16px;
+  font-family: "NotoSans-regular";
+}
+
+.labelText {
+  font-family: "NotoSans-semiBold";
+  color: #425466;
+  text-transform: capitalize;
+  font-size: 14px;
+  padding: 5px;
+}
+.labelText::first-letter {
+  text-transform: uppercase;
+}
+.container > input {
+  background-color: var(--secondary-color);
+  padding: 7px 15px;
+  border: 1px solid #a1a1a324;
+  box-shadow: 0px 1px 2px 0px #32324714;
+  border-radius: 6px;
+}
+.iconContainer {
+  padding-right: 17px;
+}
+
+.container {
+  border: 1px solid #a1a1a324;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border-radius: 6px;
+}
+
+.container:focus-within {
+  border: 1px solid var(--primary-color);
+  background-color: var(--light-blue);
+  border-radius: 6px;
+}
+
+/* Error handling */
+div.error .container:focus-within {
+  border: 1px solid var(--error-color);
+  background-color: var(--light-red);
+}
+div.error .labelText {
+  color: var(--error-color);
+}
+
+div.error .container {
+  border: 1px solid var(--error-color);
+  background-color: var(--light-red);
+}
+.container > input {
+  background: transparent;
+}
+
+.inputBox {
+  font-size: 16px;
+  width: 100%;
+  background-color: transparent !important;
+  color: var(--text-color);
+  font-family: "NotoSans-regular";
+  letter-spacing: 1.4px;
+  overflow: hidden;
+}
+
+.inputBox::placeholder {
+  color: var(--placeholder-color);
+  text-transform: capitalize;
+  font-size: 12px;
+  font-family: "NotoSans-regular";
+  line-height: 24px;
+  letter-spacing: -0.25px;
+}
+
+.inputBox:disabled {
+  cursor: not-allowed;
+  background-color: var(--disabled-input-color);
+  color: #c9c9c9;
+  user-select: none;
+}
+
+.noBorder {
+  border: none;
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+.disabled {
+  color: var(--disabled-color) !important;
+}
+
+input[type="number"] {
+  -moz-appearance: textfield;
+}
+.children {
+  min-width: 100px;
+  width: 100%;
+  background-color: transparent;
+}
+
+div.children {
+  background-color: var(--secondary-color) !important;
+  position: relative;
+}
+div.children::after {
+  position: absolute;
+  content: "";
+  height: 25px;
+  width: 2px;
+  background-color: var(--placeholder-color);
+  top: 50%;
+  left: -3px;
+  transform: translateY(-50%);
+  box-shadow: none !important;
+}
+
+.errorText {
+  height: 0px;
+  margin-top: 5px;
+  color: var(--error-color);
+  font-size: 12px;
+}
+
+@media (max-width: 1200px) {
+  .inputBox::placeholder {
+    font-size: 12px;
+  }
+}
+@media (max-width: 578px) {
+  .labelText {
+    font-family: "NotoSans-semiBold";
+  }
+}
