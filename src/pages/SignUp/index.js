@@ -1,12 +1,12 @@
-import React from 'react';
-import { useNavigate } from 'react-router-dom';
-import MyButton from '../../components/MyButton';
-import { MyInput } from '../../components/MyInput';
-import useSignup from '../../Hooks/useSignup';
+import React from "react";
+import { useNavigate } from "react-router-dom";
+import MyButton from "../../components/MyButton";
+import { MyInput } from "../../components/MyInput";
 import classes from "./SignUp.module.css";
+import useSignup from "../../Hooks/useSignup";
 
 const SignUp = () => {
-    const { form } = useSignup();
+    const { form, loading } = useSignup();
     const navigate = useNavigate();
     return (
         <>
@@ -14,13 +14,16 @@ const SignUp = () => {
                 <div className={classes["cardStyles"]}>
                     <div className={classes["header"]}>
                         <h1>Sign Up</h1>
-                        <p>Signup to Events Coordination Platform to create or be a part of events.</p>
+                        <p>
+                            Signup to Events Coordination Platform to create or be a part of
+                            events.
+                        </p>
                     </div>
                     <MyInput
                         name="username"
                         label={"Username"}
                         value={form.values.username}
-                        setter={value => form.setFieldValue("username", value)}
+                        setter={(value) => form.setFieldValue("username", value)}
                         placeholder={"Enter User name "}
                         required={true}
                         labelStyle={{ fontWeight: 600 }}
@@ -30,7 +33,7 @@ const SignUp = () => {
                         name="email"
                         label={"Email Address"}
                         value={form.values.email}
-                        setter={value => form.setFieldValue("email", value)}
+                        setter={(value) => form.setFieldValue("email", value)}
                         placeholder={"Enter Email Address"}
                         required={true}
                         labelStyle={{ fontWeight: 600 }}
@@ -58,15 +61,23 @@ const SignUp = () => {
                         labelStyle={{ fontWeight: 600 }}
                         errorText={form.errors.cpassword}
                     />
-                    <MyButton variants='primary' label={"SignUp"} type="submit" onClick={form.handleSubmit} className={classes["btnExtraStyles"]} />
+                    <MyButton
+                        variants="primary"
+                        label={"SignUp"}
+                        type="submit"
+                        disabled={loading}
+                        onClick={form.handleSubmit}
+                        className={classes["btnExtraStyles"]}
+                    />
 
                     <div className={classes["footer"]}>
-                        Already have an account? <span onClick={() => navigate("/login")}>Login</span>
+                        Already have an account?{" "}
+                        <span onClick={() => navigate("/login")}>Login</span>
                     </div>
                 </div>
             </div>
         </>
-    )
-}
+    );
+};
 
-export default SignUp
+export default SignUp;

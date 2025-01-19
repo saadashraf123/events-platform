@@ -1,43 +1,27 @@
-// Function to handle Firebase errors
-export const handleSignupError = (error) => {
-    switch (error.code) {
-        case "auth/email-already-in-use":
-            alert("The email address is already in use by another account.");
-            break;
-        case "auth/invalid-email":
-            alert("The email address is not valid.");
-            break;
-        case "auth/operation-not-allowed":
-            alert("Email/password accounts are not enabled.");
-            break;
-        case "auth/weak-password":
-            alert("The password is too weak. Please choose a stronger password.");
-            break;
-        default:
-            alert("An error occurred: " + error.message);
-            break;
-    }
+const FIREBASE_ERROR_MESSAGES = {
+    "auth/email-already-in-use": "The email address is already in use by another account.",
+    "auth/invalid-email": "The email address is not valid.",
+    "auth/operation-not-allowed": "Email/password accounts are not enabled.",
+    "auth/weak-password": "The password is too weak. Please choose a stronger password.",
+    "auth/user-not-found": "No user found with this email. Please sign up first.",
+    "auth/wrong-password": "Incorrect password. Please try again.",
+    "auth/too-many-requests": "Too many failed login attempts. Please try again later.",
+    "auth/invalid-credential": "Invalid credential. Please try again.",
 };
 
-export const handleLoginError = (error) => {
-    switch (error.code) {
-        case "auth/user-not-found":
-            alert("No user found with this email. Please sign up first.");
-            break;
-        case "auth/wrong-password":
-            alert("Incorrect password. Please try again.");
-            break;
-        case "auth/too-many-requests":
-            alert("Too many failed login attempts. Please try again later.");
-            break;
-        case "auth/invalid-email":
-            alert("Invalid email address. Please check and try again.");
-            break;
-        case "auth/invalid-credential":
-            alert("Invalid credential. Please try again.");
-            break;
-        default:
-            alert("An error occurred: " + error.message);
-            break;
-    }
+export const getFirebaseErrorMessage = error => FIREBASE_ERROR_MESSAGES[error.code] || "An error occurred: " + error.message;
+
+
+export const formatTimestamp = (timestampInSeconds) => {
+    if (!timestampInSeconds) return "";
+
+    const date = new Date(timestampInSeconds * 1000);
+
+    const options = { year: "numeric", month: "long", day: "numeric" }; // Example: January 16, 2025
+    const formattedDate = date.toLocaleDateString("en-US", options);
+
+    const timeOptions = { hour: "2-digit", minute: "2-digit" }; // Example: 10:30 AM
+    const formattedTime = date.toLocaleTimeString("en-US", timeOptions);
+
+    return `${formattedTime}, ${formattedDate}`;
 };

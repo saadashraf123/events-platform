@@ -1,0 +1,44 @@
+.eventCard {
+  margin: auto;
+  margin-top: 80px;
+  background-color: var(--light-blue);
+  width: 80%;
+}
+
+.showMoreLess {
+  color: var(--primary-color);
+  text-decoration: underline;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.eventTitle {
+  font-size: 24px;
+  font-weight: 600;
+}
+
+.eventDescription {
+  font-size: 20px;
+  font-weight: 400;
+}
+
+.eventLocation {
+  font-size: 16px;
+  font-weight: 400;
+}
+.messageDiv {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  gap: 10px;
+}
+
+.newMessage {
+  display: flex;
+  width: 100%;
+  gap: 10px;
+}
+.newMessage > button {
+  align-self: center;
+  margin-top: 10px;
+}

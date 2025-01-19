@@ -1,0 +1,16 @@
+.main {
+  display: flex;
+  justify-content: flex-start;
+  /* align-items: center; */
+  gap: 10px;
+}
+.creator {
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.others {
+  font-size: 16px;
+  font-weight: 400;
+  margin-top: 8px;
+}

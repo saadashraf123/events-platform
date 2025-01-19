@@ -1,44 +1,65 @@
 import { useAuthState } from "react-firebase-hooks/auth";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
+import AppLoader from "./components/AppLoader";
 import { auth } from "./firebase";
+import Layout from "./Layouts";
 import CreateEvent from "./pages/CreateEvent";
-import Dashboard from './pages/Dashboard';
 import EventDetails from "./pages/EventDetails";
+import Home from "./pages/Home";
 import Login from './pages/Login';
+import Profile from "./pages/Profile";
 import SignUp from './pages/SignUp';
+import NotFound from "./pages/NotFound";
 
 function App() {
-  const [user] = useAuthState(auth);
+  const [user, isAuthenticating] = useAuthState(auth);
 
-  console.log(user, "saaddddd")
+  if (isAuthenticating) {
+    return (
+      <AppLoader />
+    )
+  }
 
-  const ProtectedRoutes = ({ children }) => {
+  const ProtectedRoute = ({ children }) => {
     return user ? children : <Navigate to="/login" />;
   };
+
+  const AuthRoute = ({ children }) => {
+    return !user ? children : <Navigate to="/" />;
+  };
+
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/login" element={<Login />} />
-        <Route path="/signup" element={<SignUp />} />
+        <Route path="/login" element={<AuthRoute><Login /></AuthRoute>} />
+        <Route path="/signup" element={<AuthRoute><SignUp /></AuthRoute>} />
+        <Route path="/" element={<Layout />}>
+          <Route
+            index
+            element={
+              <ProtectedRoute>
+                <Home />
+              </ProtectedRoute>
+            }
+          />
+          <Route path="/createEvent" element={
+            <ProtectedRoute>
+              <CreateEvent />
+            </ProtectedRoute>
+          } />
+          <Route
+            path="/event/:id"
+            element={
+              <ProtectedRoute>
+                <EventDetails />
+              </ProtectedRoute>
+            }
+          />
+        </Route>
         <Route
-          path="/"
+          path="*"
           element={
-            <ProtectedRoutes>
-              <Dashboard />
-            </ProtectedRoutes>
-          }
-        />
-        <Route path="/create" element={
-          <ProtectedRoutes>
-            <CreateEvent />
-          </ProtectedRoutes>
-        } />
-        <Route
-          path="/event/:id"
-          element={
-            <ProtectedRoutes>
-              <EventDetails />
-            </ProtectedRoutes>
+            <NotFound />
           }
         />
       </Routes>

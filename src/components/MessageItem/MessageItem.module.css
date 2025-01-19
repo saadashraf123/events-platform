@@ -1,0 +1,29 @@
+.main {
+  padding: 10px;
+  background-color: var(--secondary-color);
+  border-radius: 8px;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.userDetails {
+  display: flex;
+  justify-content: flex-start;
+  gap: 10px;
+}
+
+.username {
+  font-size: 16px;
+  font-weight: 400;
+  margin-top: 5px;
+}
+
+.message {
+  font-size: 14px;
+  font-weight: 400;
+  margin-block: 0px;
+}

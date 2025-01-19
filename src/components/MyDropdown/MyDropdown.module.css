@@ -1,0 +1,20 @@
+.select-wrapper {
+  border: 1px solid #a1a1a324;
+  box-shadow: 0px 1px 2px 0px #32324714;
+  border-radius: 6px;
+}
+.label {
+  font-family: "NotoSans-semiBold";
+  color: #425466;
+  text-transform: capitalize;
+  font-size: 14px;
+  padding: 5px;
+}
+
+.disabled {
+  color: red;
+}
+
+.noBorder {
+  border: none;
+}

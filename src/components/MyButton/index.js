@@ -13,7 +13,8 @@ const MyButton = ({
     type = 'button',
     list = [],
     onButtonClick = () => { },
-    dropdown
+    dropdown,
+    ...props
 }) => {
 
     let content = children || label;
@@ -42,7 +43,9 @@ const MyButton = ({
             onClick={(e) => {
                 onClick();
             }}
-            type={type}>
+            type={type}
+            {...props}
+        >
             {content}
         </button>
     );

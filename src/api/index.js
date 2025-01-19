@@ -1,30 +1,24 @@
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from "firebase/auth";
-import { addDoc, arrayUnion, collection, doc, getDoc, getDocs, setDoc, updateDoc } from "firebase/firestore";
+import { addDoc, arrayUnion, collection, doc, getDoc, getDocs, onSnapshot, setDoc, updateDoc } from "firebase/firestore";
 import { auth, db } from "../firebase";
-import { handleLoginError, handleSignupError } from "../helpers";
-import { useNavigate } from "react-router-dom";
+import { getFirebaseErrorMessage } from "../helpers";
 
 export const logIn = async (email, password) => {
-    // const navigate = useNavigate();
     try {
         const userCredential = await signInWithEmailAndPassword(auth, email, password);
         const user = userCredential.user;
+        const token = await user.getIdToken();
         const userDoc = await getDoc(doc(db, "users", user.uid));
         if (userDoc.exists()) {
             const userData = userDoc.data();
-            alert(`Welcome back, ${userData.username}!`);
-            // navigate("/")
-        } else {
-            alert("User details not found in the database.");
+            return { ...userData, userId: user.uid, token };
         }
     } catch (e) {
-        handleLoginError(e);
+        throw getFirebaseErrorMessage(e);
     }
 };
 
-
 export const signUp = async (data) => {
-    // const navigate = useNavigate();
     const { email, password, username } = data;
     try {
         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
@@ -34,49 +28,147 @@ export const signUp = async (data) => {
             email,
             createdAt: new Date().toISOString(),
         });
-        alert("Signup successful! Welcome, " + username + "!");
-    } catch (error) {
-        handleSignupError(error);
-    }
-};
-export const logOut = async () => {
-    try {
-        await signOut(auth);
     } catch (e) {
-        return e;
+        throw getFirebaseErrorMessage(e);
     }
 };
 
-export const addEvent = async (eventData) => {
-    try {
-        const docRef = await addDoc(collection(db, "events"), eventData);
-        console.log("Event created with ID:", docRef.id);
-    } catch (e) {
-        console.error("Error adding event:", e);
-    }
+export const logOut = async () => {
+    signOut(auth);
 };
 
 export const fetchEvents = async () => {
     try {
         const querySnapshot = await getDocs(collection(db, "events"));
-        const events = querySnapshot.docs.map((doc) => ({
-            id: doc.id,
-            ...doc.data(),
-        }));
+        const events = await Promise.all(
+            querySnapshot.docs.map(async (eventDoc) => {
+                const eventData = eventDoc.data();
+
+                const userDoc = doc(db, "users", eventData.createdBy);
+                const userSnap = await getDoc(userDoc);
+
+                const createdByUser = userSnap.exists() ? userSnap.data() : null;
+
+                return {
+                    id: eventDoc.id,
+                    ...eventData,
+                    createdByUser,
+                };
+            })
+        );
         return events;
     } catch (e) {
-        console.error("Error fetching events:", e);
+        throw e;
     }
 };
 
-export const addMessage = async (eventId, message) => {
+export const getEventDetailsByIdWithMessages = async (eventId) => {
     try {
+        const eventDoc = doc(db, "events", eventId);
+        const eventSnap = await getDoc(eventDoc);
+
+        if (!eventSnap.exists()) {
+            throw new Error("Event not found");
+        }
+
+        const eventData = eventSnap.data();
+
+        const createdByDoc = doc(db, "users", eventData.createdBy);
+        const createdBySnap = await getDoc(createdByDoc);
+
+        const createdByUser = createdBySnap.exists() ? createdBySnap.data() : null;
+
+        const messages = await Promise.all(
+            (eventData.messages || []).map(async (message) => {
+                const userDoc = doc(db, "users", message.userId);
+                const userSnap = await getDoc(userDoc);
+
+                return {
+                    ...message,
+                    username: userSnap.exists() ? userSnap.data().username : "Unknown User",
+                };
+            })
+        );
+
+        const participants = await Promise.all(
+            (eventData.participants || []).map(async (participant) => {
+                const userDoc = doc(db, "users", participant);
+                const userSnap = await getDoc(userDoc);
+                return {
+                    username: userSnap.exists() ? userSnap.data().username : "Unknown User",
+                };
+            })
+        );
+
+        return {
+            eventId: eventId,
+            ...eventData,
+            createdByUser: createdByUser ? createdByUser.username : "Unknown User",
+            messages,
+            participants,
+        };
+    } catch (error) {
+        console.error("Error fetching event details with messages:", error.message);
+        throw error;
+    }
+};
+
+export const addMessage = async (eventId, messageContent) => {
+    try {
+        const currentUser = auth.currentUser;
+        if (!currentUser) {
+            throw new Error("User not authenticated");
+        }
+
+        const message = {
+            text: messageContent,
+            userId: currentUser.uid,
+            timestamp: new Date(),
+        };
+
         const eventRef = doc(db, "events", eventId);
-        await updateDoc(eventRef, {
+
+        const docRef = await updateDoc(eventRef, {
             messages: arrayUnion(message),
         });
-        console.log("Message added!");
+
+        return docRef;
+
     } catch (e) {
         console.error("Error adding message:", e);
+        throw e;
+    }
+};
+
+export const addEvent = async (eventData) => {
+    try {
+        const currentUser = auth.currentUser;
+
+        if (!currentUser) {
+            throw new Error("User not authenticated");
+        }
+        const eventWithMetaData = {
+            ...eventData,
+            createdBy: currentUser.uid,
+        };
+
+        const docRef = await addDoc(collection(db, "events"), eventWithMetaData);
+        return docRef;
+    } catch (e) {
+        throw e;
+    }
+};
+
+export const fetchUsers = async () => {
+    try {
+        const querySnapshot = await getDocs(collection(db, "users"));
+        const users = querySnapshot.docs.map((doc) => ({
+            id: doc.id,
+            ...doc.data(),
+        }));
+        return users;
+    } catch (e) {
+        console.error("Error fetching users:", e);
+        throw e;
     }
 };
